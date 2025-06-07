@@ -2,9 +2,14 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
-
-{
+# TODO: modulariser
+{ config, lib, pkgs, ... }: let 
+    sddm-astronaut = pkgs.sddm-astronaut.override {
+        themeConfig = {
+            Background = toString ./Background.png;
+        };
+    };
+in {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
@@ -25,9 +30,9 @@
       devices = ["nodev"];
       extraEntries = ''
       	menuentry 'Windows 11' {
-	  search --fs-uuid --no-floppy --set=root 846B-6075
-	  chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-	}
+          search --fs-uuid --no-floppy --set=root 846B-6075
+          chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+        }
       '';
     };
   };
@@ -61,9 +66,14 @@
   services.displayManager.sddm = {
     wayland.enable = true;
     enable = true;
-    # TODO: https://www.youtube.com/watch?v=m_6eqpKrtxk
     theme = "sddm-astronaut-theme";
+    package = pkgs.kdePackages.sddm;
+    extraPackages = with pkgs; [
+      sddm-astronaut
+    ];
   };
+
+  
 
   programs.hyprland = {
     enable = true;
@@ -124,6 +134,9 @@
     clang
     cargo
     fastfetch
+    dunst
+    sddm-astronaut
+    kdePackages.qtmultimedia
   ];
 
   fonts.packages = with pkgs; [
