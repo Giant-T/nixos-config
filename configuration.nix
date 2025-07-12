@@ -2,26 +2,24 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-# TODO: modulariser
-{ config, lib, pkgs, ... }: let 
-    sddm-astronaut = pkgs.sddm-astronaut.override {
-        themeConfig = {
-            Background = toString ./Background.png;
-        };
-    };
-in {
+{ config, lib, pkgs, inputs, ... }:
+
+{
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ./nvidia.nix
+      ./sddm.nix
     ];
 
   nixpkgs.config.allowUnfree = true;
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Use the systemd-boot EFI boot loader.
-  boot.loader.systemd-boot.enable = false;
-  boot.loader.efi.canTouchEfiVariables = true;
 
   boot.loader = {
+    systemd-boot.enable = false;
+    efi.canTouchEfiVariables = true;
     grub = {
       enable = true;
       useOSProber = true;
@@ -46,50 +44,12 @@ in {
   environment.pathsToLink = [ "/libexec" ];
 
   # Enable the X11 windowing system.
-  services.xserver = {
-    enable = false;
-    desktopManager = {
-      xterm.enable = true;
-    };
-    videoDrivers = ["nvidia"];
-
-    windowManager.i3 = {
-      enable = true;
-      extraPackages = with pkgs; [
-        rofi
-	    i3lock
-	    i3status-rust
-      ];
-    };
-  };
-
-  services.displayManager.sddm = {
-    wayland.enable = true;
-    enable = true;
-    theme = "sddm-astronaut-theme";
-    package = pkgs.kdePackages.sddm;
-    extraPackages = with pkgs; [
-      sddm-astronaut
-    ];
-  };
-
-  
+  services.xserver.enable = false;
 
   programs.hyprland = {
     enable = true;
     withUWSM = true;
     xwayland.enable = true;
-  };
-
-  hardware.graphics = {
-    enable = true;
-  };
-  hardware.nvidia = {
-    modesetting.enable = true;
-    powerManagement.enable = false;
-    powerManagement.finegrained = false;
-    open = true;
-    nvidiaSettings = true;
   };
 
   # Enable sound.
@@ -102,8 +62,7 @@ in {
   users.users.cowboy = {
     isNormalUser = true;
     extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-    packages = with pkgs; [
-    ];
+    packages = with pkgs; [ ];
     shell = pkgs.zsh;
   };
 
@@ -134,9 +93,22 @@ in {
     clang
     cargo
     fastfetch
-    dunst
-    sddm-astronaut
-    kdePackages.qtmultimedia
+    rofi
+    grim
+    slurp
+    wl-clipboard
+    pavucontrol
+    nodejs_24
+    ripgrep
+    htop
+    inputs.quickshell.packages."${pkgs.system}".default
+    material-symbols
+    ghostty
+  ];
+
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    libheif
   ];
 
   fonts.packages = with pkgs; [
