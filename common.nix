@@ -3,11 +3,9 @@
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
 { config, lib, pkgs, inputs, ... }:
-
 {
     imports =
         [ # Include the results of the hardware scan.
-            ./hardware-configuration.nix
             ./nvidia.nix
             ./sddm.nix
         ];
@@ -26,16 +24,9 @@
             copyKernels = true;
             efiSupport = true;
             devices = ["nodev"];
-            extraEntries = ''
-                menuentry 'Windows 11' {
-                  search --fs-uuid --no-floppy --set=root 846B-6075
-                  chainloader /EFI/Microsoft/Boot/bootmgfw.efi
-                }
-            '';
         };
     };
 
-    networking.hostName = "bebop"; # Define your hostname.
     networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
     # Set your time zone.
@@ -93,6 +84,7 @@
         cargo
         fastfetch
         rofi
+        rofi-power-menu
         grim
         slurp
         wl-clipboard
