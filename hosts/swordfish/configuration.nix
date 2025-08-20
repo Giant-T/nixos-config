@@ -4,4 +4,12 @@
         ./hardware-configuration.nix
     ];
     networking.hostName = "swordfish";
+
+    services.tlp = {
+        enable = true;
+    };
+
+    environment.systemPackages = with pkgs; [
+        brightnessctl
+    ];
 }
