@@ -104,7 +104,14 @@
         libheif
     ];
 
-    nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+    nix = {
+        nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+        gc = {
+            automatic = true;
+            dates = "weekly";
+            options = "--delete-older-than 30d";
+        };
+    };
 
     fonts.packages = with pkgs; [
         noto-fonts-emoji
