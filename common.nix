@@ -65,7 +65,6 @@
         libGL
         neovim
         tmux
-        zsh 
         stow
         git
         wget
@@ -97,12 +96,15 @@
         ghostty
         gpu-screen-recorder
         ffmpeg
+        nixd
     ];
 
     programs.nix-ld.enable = true;
     programs.nix-ld.libraries = with pkgs; [
         libheif
     ];
+
+    nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
     fonts.packages = with pkgs; [
         noto-fonts-emoji
@@ -113,6 +115,8 @@
     programs.zsh = {
         enable = true;
         enableCompletion = true;
+        autosuggestions.enable = true;
+        syntaxHighlighting.enable = true;
     };
 
     programs.thunar = {
@@ -125,7 +129,7 @@
     # services.openssh.enable = true;
 
     # Open ports in the firewall.
-    # networking.firewall.allowedTCPPorts = [ ... ];
+    networking.firewall.allowedTCPPorts = [ 8080 ];
     # networking.firewall.allowedUDPPorts = [ ... ];
     # Or disable the firewall altogether.
     # networking.firewall.enable = false;
