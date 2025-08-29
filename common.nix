@@ -97,6 +97,8 @@
         gpu-screen-recorder
         ffmpeg
         nixd
+        tinymist
+        racket
     ];
 
     programs.nix-ld.enable = true;
