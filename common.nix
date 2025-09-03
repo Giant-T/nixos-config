@@ -98,6 +98,8 @@
         ffmpeg
         nixd
         onefetch
+        tinymist
+        racket
     ];
 
     programs.nix-ld.enable = true;
