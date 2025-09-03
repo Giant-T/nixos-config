@@ -10,4 +10,5 @@
             }
         '';
     networking.hostName = "bebop";
+    programs.steam.enable = true;
 }

@@ -97,6 +97,7 @@
         gpu-screen-recorder
         ffmpeg
         nixd
+        onefetch
     ];
 
     programs.nix-ld.enable = true;
