@@ -2,7 +2,7 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, inputs, ... }:
+{ config, lib, pkgs, nixpkgs, quickshell, ... }:
 {
     imports =
         [ # Include the results of the hardware scan.
@@ -27,7 +27,12 @@
         };
     };
 
-    networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+    networking.networkmanager = {
+        enable = true;  # Easiest to use and most distros use this by default.
+        plugins = with pkgs; [
+            networkmanager-openconnect
+        ];
+    };
 
     # Set your time zone.
     time.timeZone = "America/Montreal";
@@ -54,8 +59,8 @@
     # Define a user account. Don't forget to set a password with ‘passwd’.
     users.users.cowboy = {
         isNormalUser = true;
-        extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-        packages = with pkgs; [ ];
+        extraGroups = [ "wheel" "networkmanager" ]; # Enable ‘sudo’ for the user.
+        packages = [ ];
         shell = pkgs.zsh;
     };
 
@@ -91,7 +96,7 @@
         nodejs_24
         ripgrep
         htop
-        inputs.quickshell.packages."${pkgs.system}".default
+        quickshell.packages.${pkgs.system}.default
         material-symbols
         ghostty
         gpu-screen-recorder
@@ -100,15 +105,38 @@
         onefetch
         tinymist
         racket
+        networkmanagerapplet
+        openconnect
     ];
 
     programs.nix-ld.enable = true;
     programs.nix-ld.libraries = with pkgs; [
         libheif
+        # The following libraries are only for electron development
+        glib
+        nspr
+        nss
+        dbus
+        atk
+        cups
+        cairo
+        gtk3
+        pango
+        xorg.libX11
+        xorg.libXcomposite
+        xorg.libXdamage
+        xorg.libXext
+        xorg.libXfixes
+        xorg.libXrandr
+        xorg.libxcb
+        libxkbcommon
+        alsa-lib
+        libgbm
+        expat
     ];
 
     nix = {
-        nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+        nixPath = [ "nixpkgs=${nixpkgs}" ];
         gc = {
             automatic = true;
             dates = "weekly";
@@ -139,7 +167,9 @@
     # services.openssh.enable = true;
 
     # Open ports in the firewall.
-    networking.firewall.allowedTCPPorts = [ 8080 ];
+    networking.firewall = {
+        allowedTCPPorts = [ 8080 ];
+    };
     # networking.firewall.allowedUDPPorts = [ ... ];
     # Or disable the firewall altogether.
     # networking.firewall.enable = false;

@@ -13,11 +13,11 @@
         };
     };
 
-    outputs = { self, nixpkgs, quickshell }@inputs: {
+    outputs = { self, nixpkgs, quickshell }: {
         nixosConfigurations = {
             swordfish = nixpkgs.lib.nixosSystem {
                 system = "x86_64-linux";
-                specialArgs = { inherit inputs; };
+                specialArgs = { inherit nixpkgs; inherit quickshell; };
                 modules = [
                     ./common.nix
                     ./hosts/swordfish/configuration.nix
@@ -25,7 +25,7 @@
             };
             bebop = nixpkgs.lib.nixosSystem {
                 system = "x86_64-linux";
-                specialArgs = { inherit inputs; };
+                specialArgs = { inherit nixpkgs; inherit quickshell; };
                 modules = [
                     ./common.nix
                     ./hosts/bebop/configuration.nix
